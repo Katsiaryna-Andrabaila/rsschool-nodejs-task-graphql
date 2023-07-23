@@ -13,12 +13,9 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
-  GraphQLString,
   graphql,
 } from 'graphql';
 import { UUIDType } from './types/uuid.js';
-import { Prisma, PrismaClient } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { prisma } = fastify;
@@ -116,13 +113,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         }),
       });
 
-      const resolvers = {
-        memberTypes: async () => await prisma.memberType.findMany(),
-        users: async () => await prisma.user.findMany(),
-        posts: async () => await prisma.post.findMany(),
-        profiles: async () => await prisma.profile.findMany(),
-      };
-
       const reqQuery = req.body.query;
       const reqVars = req.body.variables;
 
@@ -131,7 +121,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         source: reqQuery,
         variableValues: reqVars,
         contextValue: { prisma },
-        //rootValue: resolvers,
       });
     },
   });

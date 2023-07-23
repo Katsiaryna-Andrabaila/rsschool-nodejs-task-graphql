@@ -1,9 +1,7 @@
 import { Type } from '@fastify/type-provider-typebox';
 import {
-  GraphQLSchema,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLList,
   GraphQLFloat,
   GraphQLBoolean,
   GraphQLInt,
