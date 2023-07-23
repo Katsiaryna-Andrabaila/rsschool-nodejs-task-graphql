@@ -75,39 +75,24 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
               args: {
                 id: { type: new GraphQLNonNull(UUIDType) },
               },
-              resolve: async (_source, { id }: { id: string }, _context) => {
-                try {
-                  return await prisma.profile.findUnique({ where: { id } });
-                } catch {
-                  return null;
-                }
-              },
+              resolve: async (_source, { id }: { id: string }, _context) =>
+                (await prisma.profile.findUnique({ where: { id } })) || null,
             },
             post: {
               type: Post,
               args: {
                 id: { type: new GraphQLNonNull(UUIDType) },
               },
-              resolve: async (_source, { id }: { id: string }, _context) => {
-                try {
-                  return await prisma.post.findUnique({ where: { id } });
-                } catch {
-                  return null;
-                }
-              },
+              resolve: async (_source, { id }: { id: string }, _context) =>
+                (await prisma.post.findUnique({ where: { id } })) || null,
             },
             memberType: {
               type: MemberType,
               args: {
                 id: { type: new GraphQLNonNull(MemberTypeId) },
               },
-              resolve: async (_source, { id }: { id: string }, _context) => {
-                try {
-                  return await prisma.memberType.findUnique({ where: { id } });
-                } catch {
-                  return null;
-                }
-              },
+              resolve: async (_source, { id }: { id: string }, _context) =>
+                (await prisma.memberType.findUnique({ where: { id } })) || null,
             },
           },
         }),
@@ -120,7 +105,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         schema,
         source: reqQuery,
         variableValues: reqVars,
-        contextValue: { prisma },
+        contextValue: prisma,
       });
     },
   });

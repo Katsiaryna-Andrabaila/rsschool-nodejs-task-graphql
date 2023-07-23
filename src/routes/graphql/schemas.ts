@@ -7,8 +7,10 @@ import {
   GraphQLInt,
   GraphQLEnumType,
   GraphQLNonNull,
+  GraphQLList,
 } from 'graphql';
 import { UUIDType } from './types/uuid.js';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 export const gqlResponseSchema = Type.Partial(
   Type.Object({
@@ -40,6 +42,14 @@ export const User = new GraphQLObjectType({
     },
     balance: {
       type: GraphQLFloat,
+    },
+    profile: {
+      type: Profile,
+      resolve: async (_source, { id }: { id: string }, prisma: PrismaClient) =>
+        id ? await prisma.profile.findUnique({ where: { id } }) : null,
+    },
+    posts: {
+      type: new GraphQLList(Post),
     },
   }),
 });
