@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Type } from '@fastify/type-provider-typebox';
 import {
   GraphQLObjectType,
@@ -10,7 +11,7 @@ import {
   GraphQLList,
 } from 'graphql';
 import { UUIDType } from './types/uuid.js';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 export const gqlResponseSchema = Type.Partial(
   Type.Object({
@@ -31,6 +32,18 @@ export const createGqlResponseSchema = {
   ),
 };
 
+export const MemberTypeId = new GraphQLEnumType({
+  name: 'MemberTypeId',
+  values: {
+    basic: {
+      value: 'basic',
+    },
+    business: {
+      value: 'business',
+    },
+  },
+});
+
 export const User = new GraphQLObjectType({
   name: 'user',
   fields: () => ({
@@ -45,32 +58,44 @@ export const User = new GraphQLObjectType({
     },
     profile: {
       type: Profile,
-      resolve: async (_source, { id }: { id: string }, prisma: PrismaClient) =>
-        id ? await prisma.profile.findUnique({ where: { id } }) : null,
+      resolve: async ({ id }, _args, prisma: PrismaClient) => {
+        return id
+          ? await prisma.profile.findUnique({
+              where: { userId: id },
+            })
+          : null;
+      },
     },
     posts: {
       type: new GraphQLList(Post),
+      resolve: async ({ id }, _args, prisma: PrismaClient) => {
+        return await prisma.post.findMany({
+          where: { authorId: id },
+        });
+      },
     },
   }),
 });
 
-export const SubscribersOnAuthors = new GraphQLObjectType({
+/* export const SubscribersOnAuthors = new GraphQLObjectType({
   name: 'subscribersOnAuthors',
   fields: () => ({
     subscriber: {
+      
       type: User,
     },
     subscriberId: {
       type: GraphQLString,
     },
     author: {
+      
       type: User,
     },
     authorId: {
       type: GraphQLString,
     },
   }),
-});
+}); */
 
 export const Profile = new GraphQLObjectType({
   name: 'profile',
@@ -83,6 +108,20 @@ export const Profile = new GraphQLObjectType({
     },
     yearOfBirth: {
       type: GraphQLInt,
+    },
+    user: {
+      type: User,
+      resolve: async ({ id }, _args, prisma: PrismaClient) =>
+        await prisma.user.findUnique({ where: { id } }),
+    },
+    userId: { type: UUIDType },
+    memberTypeId: {
+      type: MemberTypeId,
+    },
+    memberType: {
+      type: MemberType,
+      resolve: async ({ memberTypeId }, _args, prisma: PrismaClient) =>
+        await prisma.memberType.findUnique({ where: { id: memberTypeId } }),
     },
   }),
 });
@@ -99,19 +138,15 @@ export const Post = new GraphQLObjectType({
     content: {
       type: GraphQLString,
     },
+    authorId: {
+      type: GraphQLString,
+    },
+    author: {
+      type: User,
+      resolve: async ({ id }, _args, prisma: PrismaClient) =>
+        await prisma.user.findUnique({ where: { id } }),
+    },
   }),
-});
-
-export const MemberTypeId = new GraphQLEnumType({
-  name: 'MemberTypeId',
-  values: {
-    basic: {
-      value: 'basic',
-    },
-    business: {
-      value: 'business',
-    },
-  },
 });
 
 export const MemberType = new GraphQLObjectType({
@@ -125,6 +160,11 @@ export const MemberType = new GraphQLObjectType({
     },
     postsLimitPerMonth: {
       type: GraphQLInt,
+    },
+    profiles: {
+      type: new GraphQLList(Profile),
+      resolve: async ({ id }, _args, prisma: PrismaClient) =>
+        (await prisma.profile.findMany({ where: { memberTypeId: id } })) || null,
     },
   }),
 });
