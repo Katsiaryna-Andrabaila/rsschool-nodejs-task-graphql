@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import {
   GraphQLBoolean,
   GraphQLInputObjectType,
@@ -11,8 +9,9 @@ import { UUIDType } from '../types/uuid.js';
 import { User } from './user.js';
 import { PrismaClient } from '@prisma/client';
 import { MemberType, MemberTypeId } from './member.js';
+import { ProfileType } from '../types/profile.js';
 
-export const Profile = new GraphQLObjectType({
+export const Profile: GraphQLObjectType = new GraphQLObjectType({
   name: 'profile',
   fields: () => ({
     id: {
@@ -27,18 +26,15 @@ export const Profile = new GraphQLObjectType({
     userId: { type: UUIDType },
     user: {
       type: User,
-      resolve: async (
-        { memberTypeId }: { memberTypeId: string },
-        _args,
-        prisma: PrismaClient,
-      ) => await prisma.user.findUnique({ where: { id: memberTypeId } }),
+      resolve: async ({ memberTypeId }: ProfileType, _args, prisma: PrismaClient) =>
+        await prisma.user.findUnique({ where: { id: memberTypeId } }),
     },
     memberTypeId: {
       type: MemberTypeId,
     },
     memberType: {
       type: MemberType,
-      resolve: async ({ memberTypeId }, _args, prisma: PrismaClient) =>
+      resolve: async ({ memberTypeId }: ProfileType, _args, prisma: PrismaClient) =>
         await prisma.memberType.findUnique({ where: { id: memberTypeId } }),
     },
   }),

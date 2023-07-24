@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   GraphQLInputObjectType,
   GraphQLNonNull,
@@ -8,6 +7,7 @@ import {
 import { User } from './user.js';
 import { PrismaClient } from '@prisma/client';
 import { UUIDType } from '../types/uuid.js';
+import { UserType } from '../types/user.js';
 
 export const Post = new GraphQLObjectType({
   name: 'post',
@@ -26,7 +26,7 @@ export const Post = new GraphQLObjectType({
     },
     author: {
       type: User,
-      resolve: async ({ id }: { id: string }, _args, prisma: PrismaClient) =>
+      resolve: async ({ id }: UserType, _args, prisma: PrismaClient) =>
         await prisma.user.findUnique({ where: { id } }),
     },
   }),

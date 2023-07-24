@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   GraphQLFloat,
   GraphQLInputObjectType,
@@ -11,8 +10,9 @@ import { UUIDType } from '../types/uuid.js';
 import { PrismaClient } from '@prisma/client';
 import { Profile } from './profile.js';
 import { Post } from './post.js';
+import { ProfileType } from '../types/profile.js';
 
-export const User = new GraphQLObjectType({
+export const User: GraphQLObjectType = new GraphQLObjectType({
   name: 'user',
   fields: () => ({
     id: {
@@ -26,7 +26,7 @@ export const User = new GraphQLObjectType({
     },
     profile: {
       type: Profile,
-      resolve: async ({ id }: { id: string }, _args, prisma: PrismaClient) => {
+      resolve: async ({ id }: ProfileType, _args, prisma: PrismaClient) => {
         return id
           ? await prisma.profile.findUnique({
               where: { userId: id },
