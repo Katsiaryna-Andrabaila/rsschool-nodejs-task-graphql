@@ -1,13 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
-import {
-  MemberTypeId,
-  MemberType,
-  Post,
-  Profile,
-  User,
-  createGqlResponseSchema,
-  gqlResponseSchema,
-} from './schemas.js';
+import { createGqlResponseSchema, gqlResponseSchema } from './schemas.js';
 import {
   GraphQLList,
   GraphQLNonNull,
@@ -16,6 +9,10 @@ import {
   graphql,
 } from 'graphql';
 import { UUIDType } from './types/uuid.js';
+import { User } from './GQLTypes/user.js';
+import { MemberType, MemberTypeId } from './GQLTypes/member.js';
+import { Profile } from './GQLTypes/profile.js';
+import { Post } from './GQLTypes/post.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { prisma } = fastify;
@@ -38,12 +35,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
               type: new GraphQLList(User),
               resolve: async () => await prisma.user.findMany(),
             },
-            /* subscribersOnAuthors: {
-              type: SubscribersOnAuthors,
-              args: {
-                id: { type: GraphQLString },
-              },
-            }, */
             profiles: {
               type: new GraphQLList(Profile),
               resolve: async () => await prisma.profile.findMany(),
