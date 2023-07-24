@@ -8,9 +8,9 @@ import {
   GraphQLObjectType,
   GraphQLSchema,
 } from 'graphql';
-import { User, CreateUserInput } from './GQLTypes/user.js';
-import { CreateProfileInput, Profile } from './GQLTypes/profile.js';
-import { CreatePostInput, Post } from './GQLTypes/post.js';
+import { User, CreateUserInput, ChangeUserInput } from './GQLTypes/user.js';
+import { CreateProfileInput, Profile, ChangeProfileInput } from './GQLTypes/profile.js';
+import { CreatePostInput, Post, ChangePostInput } from './GQLTypes/post.js';
 import { MemberType, MemberTypeId } from './GQLTypes/member.js';
 import { UUIDType } from './types/uuid.js';
 
@@ -105,11 +105,10 @@ export const getSchema = (prisma: PrismaClient) => {
               type: CreatePostInput,
             },
           },
-          resolve: async (_source, { dto }, _context) => {
-            return await prisma.post.create({
+          resolve: async (_source, { dto }, _context) =>
+            await prisma.post.create({
               data: dto,
-            });
-          },
+            }),
         },
         createUser: {
           type: User,
@@ -118,11 +117,10 @@ export const getSchema = (prisma: PrismaClient) => {
               type: CreateUserInput,
             },
           },
-          resolve: async (_source, { dto }, _context) => {
-            return await prisma.user.create({
+          resolve: async (_source, { dto }, _context) =>
+            await prisma.user.create({
               data: dto,
-            });
-          },
+            }),
         },
         createProfile: {
           type: Profile,
@@ -131,11 +129,10 @@ export const getSchema = (prisma: PrismaClient) => {
               type: CreateProfileInput,
             },
           },
-          resolve: async (_source, { dto }, _context) => {
-            return await prisma.profile.create({
+          resolve: async (_source, { dto }, _context) =>
+            await prisma.profile.create({
               data: dto,
-            });
-          },
+            }),
         },
         deletePost: {
           type: GraphQLBoolean,
@@ -144,9 +141,8 @@ export const getSchema = (prisma: PrismaClient) => {
               type: UUIDType,
             },
           },
-          resolve: async (_source, { id }, _context) => {
-            return !!(await prisma.post.delete({ where: { id } }));
-          },
+          resolve: async (_source, { id }, _context) =>
+            !!(await prisma.post.delete({ where: { id } })),
         },
         deleteUser: {
           type: GraphQLBoolean,
@@ -155,9 +151,8 @@ export const getSchema = (prisma: PrismaClient) => {
               type: UUIDType,
             },
           },
-          resolve: async (_source, { id }, _context) => {
-            return !!(await prisma.user.delete({ where: { id } }));
-          },
+          resolve: async (_source, { id }, _context) =>
+            !!(await prisma.user.delete({ where: { id } })),
         },
         deleteProfile: {
           type: GraphQLBoolean,
@@ -166,9 +161,47 @@ export const getSchema = (prisma: PrismaClient) => {
               type: UUIDType,
             },
           },
-          resolve: async (_source, { id }, _context) => {
-            return !!(await prisma.profile.delete({ where: { id } }));
+          resolve: async (_source, { id }, _context) =>
+            !!(await prisma.profile.delete({ where: { id } })),
+        },
+        changePost: {
+          type: Post,
+          args: {
+            id: {
+              type: UUIDType,
+            },
+            dto: {
+              type: ChangePostInput,
+            },
           },
+          resolve: async (_source, { id, dto }, _context) =>
+            await prisma.post.update({ where: { id }, data: dto }),
+        },
+        changeUser: {
+          type: User,
+          args: {
+            id: {
+              type: UUIDType,
+            },
+            dto: {
+              type: ChangeUserInput,
+            },
+          },
+          resolve: async (_source, { id, dto }, _context) =>
+            await prisma.user.update({ where: { id }, data: dto }),
+        },
+        changeProfile: {
+          type: Profile,
+          args: {
+            id: {
+              type: UUIDType,
+            },
+            dto: {
+              type: ChangeProfileInput,
+            },
+          },
+          resolve: async (_source, { id, dto }, _context) =>
+            await prisma.profile.update({ where: { id }, data: dto }),
         },
       },
     }),
