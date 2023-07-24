@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { GraphQLBoolean, GraphQLInt, GraphQLNonNull, GraphQLObjectType } from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+} from 'graphql';
 import { UUIDType } from '../types/uuid.js';
 import { User } from './user.js';
 import { PrismaClient } from '@prisma/client';
@@ -36,4 +42,14 @@ export const Profile = new GraphQLObjectType({
         await prisma.memberType.findUnique({ where: { id: memberTypeId } }),
     },
   }),
+});
+
+export const CreateProfileInput = new GraphQLInputObjectType({
+  name: 'CreateProfileInput',
+  fields: {
+    userId: { type: new GraphQLNonNull(UUIDType) },
+    memberTypeId: { type: new GraphQLNonNull(MemberTypeId) },
+    isMale: { type: new GraphQLNonNull(GraphQLBoolean) },
+    yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
+  },
 });

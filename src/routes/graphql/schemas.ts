@@ -2,9 +2,9 @@
 import { Type } from '@fastify/type-provider-typebox';
 import { PrismaClient } from '@prisma/client';
 import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
-import { User } from './GQLTypes/user.js';
-import { Profile } from './GQLTypes/profile.js';
-import { Post } from './GQLTypes/post.js';
+import { User, CreateUserInput } from './GQLTypes/user.js';
+import { CreateProfileInput, Profile } from './GQLTypes/profile.js';
+import { CreatePostInput, Post } from './GQLTypes/post.js';
 import { MemberType, MemberTypeId } from './GQLTypes/member.js';
 import { UUIDType } from './types/uuid.js';
 
@@ -85,6 +85,51 @@ export const getSchema = (prisma: PrismaClient) => {
           },
           resolve: async (_source, { id }: { id: string }, _context) =>
             (await prisma.memberType.findUnique({ where: { id } })) || null,
+        },
+      },
+    }),
+
+    mutation: new GraphQLObjectType({
+      name: 'RootMutationType',
+      fields: {
+        createPost: {
+          type: Post,
+          args: {
+            dto: {
+              type: CreatePostInput,
+            },
+          },
+          resolve: async (_source, { dto }, _context) => {
+            return await prisma.post.create({
+              data: dto,
+            });
+          },
+        },
+        createUser: {
+          type: User,
+          args: {
+            dto: {
+              type: CreateUserInput,
+            },
+          },
+          resolve: async (_source, { dto }, _context) => {
+            return await prisma.user.create({
+              data: dto,
+            });
+          },
+        },
+        createProfile: {
+          type: Profile,
+          args: {
+            dto: {
+              type: CreateProfileInput,
+            },
+          },
+          resolve: async (_source, { dto }, _context) => {
+            return await prisma.profile.create({
+              data: dto,
+            });
+          },
         },
       },
     }),
