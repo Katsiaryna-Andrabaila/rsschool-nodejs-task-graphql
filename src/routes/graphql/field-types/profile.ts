@@ -5,11 +5,11 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql';
-import { UUIDType } from '../types/uuid.js';
+import { UUIDType } from '../ts-types/uuid.js';
 import { User } from './user.js';
 import { PrismaClient } from '@prisma/client';
 import { MemberType, MemberTypeId } from './member.js';
-import { ProfileType } from '../types/profile.js';
+import { ProfileType } from '../ts-types/profile.js';
 
 export const Profile: GraphQLObjectType = new GraphQLObjectType({
   name: 'profile',
