@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Type } from '@fastify/type-provider-typebox';
 import { PrismaClient } from '@prisma/client';
-import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema } from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLSchema,
+} from 'graphql';
 import { User, CreateUserInput } from './GQLTypes/user.js';
 import { CreateProfileInput, Profile } from './GQLTypes/profile.js';
 import { CreatePostInput, Post } from './GQLTypes/post.js';
@@ -129,6 +135,39 @@ export const getSchema = (prisma: PrismaClient) => {
             return await prisma.profile.create({
               data: dto,
             });
+          },
+        },
+        deletePost: {
+          type: GraphQLBoolean,
+          args: {
+            id: {
+              type: UUIDType,
+            },
+          },
+          resolve: async (_source, { id }, _context) => {
+            return !!(await prisma.post.delete({ where: { id } }));
+          },
+        },
+        deleteUser: {
+          type: GraphQLBoolean,
+          args: {
+            id: {
+              type: UUIDType,
+            },
+          },
+          resolve: async (_source, { id }, _context) => {
+            return !!(await prisma.user.delete({ where: { id } }));
+          },
+        },
+        deleteProfile: {
+          type: GraphQLBoolean,
+          args: {
+            id: {
+              type: UUIDType,
+            },
+          },
+          resolve: async (_source, { id }, _context) => {
+            return !!(await prisma.profile.delete({ where: { id } }));
           },
         },
       },
