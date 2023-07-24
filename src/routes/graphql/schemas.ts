@@ -203,6 +203,37 @@ export const getSchema = (prisma: PrismaClient) => {
           resolve: async (_source, { id, dto }, _context) =>
             await prisma.profile.update({ where: { id }, data: dto }),
         },
+        subscribeTo: {
+          type: User,
+          args: {
+            userId: {
+              type: UUIDType,
+            },
+            authorId: {
+              type: UUIDType,
+            },
+          },
+          resolve: async (_source, { userId, authorId }, _context) =>
+            await prisma.user.update({
+              where: { id: userId },
+              data: { userSubscribedTo: { create: { authorId } } },
+            }),
+        },
+        unsubscribeFrom: {
+          type: GraphQLBoolean,
+          args: {
+            userId: {
+              type: UUIDType,
+            },
+            authorId: {
+              type: UUIDType,
+            },
+          },
+          resolve: async (_source, { userId, authorId }, _context) =>
+            !!(await prisma.subscribersOnAuthors.delete({
+              where: { subscriberId_authorId: { subscriberId: userId, authorId } },
+            })),
+        },
       },
     }),
   });
