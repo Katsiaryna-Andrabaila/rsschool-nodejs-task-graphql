@@ -1,4 +1,8 @@
 import { Type } from '@fastify/type-provider-typebox';
+import { PrismaClient } from '@prisma/client';
+import { GraphQLSchema } from 'graphql';
+import { getRootQuery } from './root-types/query.js';
+import { getRootMutation } from './root-types/mutation.js';
 
 export const gqlResponseSchema = Type.Partial(
   Type.Object({
@@ -17,4 +21,11 @@ export const createGqlResponseSchema = {
       additionalProperties: false,
     },
   ),
+};
+
+export const getSchema = (prisma: PrismaClient) => {
+  return new GraphQLSchema({
+    query: getRootQuery(prisma),
+    mutation: getRootMutation(prisma),
+  });
 };

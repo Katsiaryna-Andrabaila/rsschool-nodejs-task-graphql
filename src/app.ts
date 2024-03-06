@@ -14,6 +14,7 @@ const opts: Partial<AutoloadPluginOptions> = {
     }
     return !path.endsWith('index.js');
   },
+
   forceESM: true,
 };
 
